@@ -197,4 +197,4 @@ def is_truth_answer(answer, truth):
 
 
 if __name__ == "__main__":
-    app.run(port=8000, ssl_context='adhoc')
+    app.run(host='0.0.0.0', port=8000, ssl_context='adhoc')
