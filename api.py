@@ -93,7 +93,6 @@ def handle_dialog(req, res):
         right_answer = questions[last_question]
     else:
         right_answer = reverse_questions[last_question]
-    right_answer = right_answer.lower()
 
     if 'дальше' in words or 'далее' in words:
         sessionStorage[user_id]['strike'] = 0
@@ -103,6 +102,7 @@ def handle_dialog(req, res):
         new_ask(user_id, res)
         return
 
+    right_answer = right_answer.lower()
     if 'вопрос' in words or 'повтори' in words:
         res['response']['text'] = sessionStorage[user_id]['last']
         return
