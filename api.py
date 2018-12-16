@@ -8,7 +8,6 @@ import logging
 import random
 
 # Импортируем подмодули Flask для запуска веб-сервиса.
-from typing import Dict
 
 from flask import Flask, request
 
@@ -18,8 +17,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Хранилище данных о сессиях.
 sessionStorage = {}
-questions: Dict[str, str] = {}
-reverse_questions: Dict[str, str] = {}
+questions = {}
+reverse_questions = {}
 
 
 # Задаем параметры приложения Flask.
