@@ -194,3 +194,7 @@ def is_truth_answer(answer, truth):
     if answer.lower() == " ".join(truth.split("-")):
         return True
     return False
+
+
+if __name__ == "__main__":
+    app.run(port=8000, ssl_context='adhoc')
