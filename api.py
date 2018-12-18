@@ -52,7 +52,7 @@ def main():
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
-    if req['session']['new']:
+    if req['session']['new'] or user_id not in sessionStorage.keys():
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
 
