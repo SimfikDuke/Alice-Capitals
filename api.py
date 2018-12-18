@@ -66,28 +66,64 @@ def handle_dialog(req, res):
                                   ' её столицу. Или я буду называть город, а ты должен будешь угадать,' \
                                   ' столицей какого государства он является. Если ты не можешь угадать ответ - просто' \
                                   ' скажи \"дальше\", и мы пропустим этот вопрос.' \
+                                  ' Для того, чтобы начать, скажи \"начать\"' \
                                   ' Для завершения игры скажите \"выйти\". Ну что, начнём?'
         res['response']['buttons'] = [{
-            'title': 'Погнали!',
+            'title': 'Начать',
             'hide': True
         }]
 
-        return
-
-    if len(sessionStorage[user_id]['questions']) == 0:
-        res['response']['text'] = 'Итак, первый вопрос: '
-        question = random.choice(list(questions.keys()))
-        res['response']['text'] += 'Какой город является столицей ' + question + '?'
-        sessionStorage[user_id]['questions'].append((question, True))
-
-        res['response']['buttons'] = [{
-            'title': 'Дальше',
-            'hide': True
-        }]
-        sessionStorage[user_id]['last'] = res['response']['text']
         return
 
     words = req['request']['original_utterance'].lower().split()
+
+    if 'выход' in words or 'хватит' in words or 'выйти' in words:
+        res['response']['text'] = "Пока-пока!"
+        res['response']['end_session'] = True
+        return
+
+    if 'помощь' in words or 'помоги' in words or 'умеешь' in words:
+        res['response']['text'] = 'Я - навык Алисы - игра в \"Столицы\"! Я буду называть страну, а ты угадывать' \
+                                  ' её столицу. Или я буду называть город, а ты должен будешь угадать,' \
+                                  ' столицей какого государства он является. Если ты не можешь угадать ответ - просто' \
+                                  ' скажи \"дальше\", и мы пропустим этот вопрос.' \
+                                  ' Для того, чтобы начать, скажи \"начать\"' \
+                                  ' Чтобы повторить вопрос, скажи мне \"вопрос\"' \
+                                  ' Для завершения игры скажите \"выйти\".'
+        res['response']['buttons'] = [
+            {
+                'title': 'Начать',
+                'hide': True
+            },
+            {
+                'title': 'Помощь',
+                'hide': True
+            }
+        ]
+        return
+
+    if len(sessionStorage[user_id]['questions']) == 0:
+        if 'начать' in words or 'начнем' in words or 'вопрос' in words:
+            res['response']['text'] = 'Итак, первый вопрос: '
+            question = random.choice(list(questions.keys()))
+            res['response']['text'] += 'Какой город является столицей ' + question + '?'
+            sessionStorage[user_id]['questions'].append((question, True))
+
+            res['response']['buttons'] = [{
+                'title': 'Дальше',
+                'hide': True
+            }]
+            sessionStorage[user_id]['last'] = res['response']['text']
+            return
+        else:
+            res['response']['text'] = "Я не знаю такой команды. Скажите \"начать\", чтобы начать игру." \
+                                      " Также можете получить помощь, сказав мне \"помощь\""
+            res['response']['buttons'] = [{
+                'title': 'Начать',
+                'hide': True
+            }]
+            return
+
     last_question, is_last_country = sessionStorage[user_id]['questions'][-1]
 
     if is_last_country:
@@ -104,13 +140,8 @@ def handle_dialog(req, res):
         return
 
     right_answer = right_answer.lower()
-    if 'вопрос' in words or 'повтори' in words:
+    if 'вопрос' in words or 'повтори' in words or 'начать' in words:
         res['response']['text'] = sessionStorage[user_id]['last']
-        return
-
-    if 'выход' in words or 'хватит' in words or 'выйти' in words:
-        res['response']['text'] = "Пока-пока!"
-        res['response']['end_session'] = True
         return
 
     if is_truth_answer(req['request']['original_utterance'].lower(), right_answer):
@@ -165,12 +196,16 @@ def generate_question(existing_questions):
 
 def new_ask(user_id, res):
     question, is_country = generate_question(sessionStorage[user_id]['questions'])
+    ask = ''
     if is_country:
-        res['response']['text'] += 'Какой город является столицей ' + question + '?'
+        ask += 'Какой город является столицей ' + question + '?'
         sessionStorage[user_id]['questions'].append((question, True))
     else:
-        res['response']['text'] += 'Столицей какого государства является ' + question + '?'
+        ask += 'Столицей какого государства является ' + question + '?'
         sessionStorage[user_id]['questions'].append((question, False))
+
+    res['response']['text'] = ask
+    sessionStorage[user_id]['last'] = ask
 
     res['response']['buttons'] = [{
         'title': 'Дальше',
@@ -181,8 +216,6 @@ def new_ask(user_id, res):
             'hide': True
         }
     ]
-
-    sessionStorage[user_id]['last'] = res['response']['text']
 
 
 def is_truth_answer(answer, truth):
