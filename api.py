@@ -204,7 +204,7 @@ def new_ask(user_id, res):
         ask += 'Столицей какого государства является ' + question + '?'
         sessionStorage[user_id]['questions'].append((question, False))
 
-    res['response']['text'] = ask
+    res['response']['text'] += ask
     sessionStorage[user_id]['last'] = ask
 
     res['response']['buttons'] = [{
