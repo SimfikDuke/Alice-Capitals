@@ -167,7 +167,7 @@ def handle_dialog(req, res):
 
 
 def fill_questions():
-    with open("questions.txt", "r") as f:
+    with open("questions.txt", "r", encoding="utf-8") as f:
         for line in f.readlines():
             question, answer = line.split(" - ")
             answer = answer[:-1] if answer[-1] == "\n" else answer
