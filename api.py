@@ -6,9 +6,6 @@ from __future__ import unicode_literals
 import json
 import logging
 import random
-import sys
-
-sys.setdefaultencoding('utf-8')
 
 # Импортируем подмодули Flask для запуска веб-сервиса.
 
