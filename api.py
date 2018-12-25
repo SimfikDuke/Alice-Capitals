@@ -40,7 +40,7 @@ def main():
     handle_dialog(request.json, response)
 
     logging.info('Response: %r', response)
-
+    clear_sessions()
     return json.dumps(
         response,
         ensure_ascii=False,
@@ -80,6 +80,7 @@ def handle_dialog(req, res):
     if 'выход' in words or 'хватит' in words or 'выйти' in words:
         res['response']['text'] = "Пока-пока!"
         res['response']['end_session'] = True
+        sessionStorage.pop(user_id)
         return
 
     if 'помощь' in words or 'помоги' in words or 'умеешь' in words:
@@ -216,6 +217,16 @@ def new_ask(user_id, res):
             'hide': True
         }
     ]
+
+
+def clear_sessions():
+    if len(sessionStorage.keys()) > 1000:
+        margin = 850
+        for i in sessionStorage.keys():
+            sessionStorage.pop(i)
+            margin -= 1
+            if margin < 1:
+                break
 
 
 def is_truth_answer(answer, truth):
